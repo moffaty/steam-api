@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SteamIdDto } from '../steamid';
+import { SteamDTO } from '../steam';
 export class Player {
-    @ApiProperty({ description: 'Steam identificator', type: SteamIdDto })
-    steamid: SteamIdDto;
+    @ApiProperty({ description: 'Steam identificator', type: SteamDTO })
+    steamid: SteamDTO;
     @ApiProperty({
         description:
             'This represents whether the profile is visible or not, and if it is visible, why you are allowed to see it',

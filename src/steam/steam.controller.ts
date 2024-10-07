@@ -4,8 +4,6 @@ import {
     HttpStatus,
     ParseIntPipe,
     Query,
-    UsePipes,
-    ValidationPipe,
 } from '@nestjs/common';
 import { SteamService } from './steam.service';
 import { Relationships } from './enums';
@@ -14,7 +12,7 @@ import { FriendsList } from './dto/responses/friendlist';
 import { Responses } from './interfaces';
 import { ProfileResponse } from './dto/responses/profile';
 import { AchievementResponse } from './dto/responses/achievements';
-import { SteamIdDto } from './dto/steamid';
+import { SteamDTO } from './dto/steam';
 import { GamesResponse } from './dto/responses/games';
 @Controller('steam')
 export class SteamController {
@@ -26,7 +24,7 @@ export class SteamController {
         name: 'steamids',
         required: true,
         description: 'Steam identificator',
-        type: SteamIdDto,
+        type: SteamDTO,
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -35,7 +33,7 @@ export class SteamController {
     })
     @Get('profile')
     async getProfile(
-        @Query('steamids', new ParseIntPipe()) steamIds: SteamIdDto,
+        @Query('steamids', new ParseIntPipe()) steamIds: SteamDTO,
     ): Promise<Responses.ProfileResponse> {
         return await this.steamService.GetProfileInfo(steamIds.toString());
     }
@@ -46,7 +44,7 @@ export class SteamController {
         name: 'steamid',
         required: true,
         description: 'Steam identificator',
-        type: SteamIdDto,
+        type: SteamDTO,
     })
     @ApiQuery({
         name: 'withNames',
@@ -66,15 +64,9 @@ export class SteamController {
     })
     @Get('friends')
     async getFriends(
-        @Query('steamid') steamid: SteamIdDto,
-        @Query('withNames') wihtNames: boolean,
-        @Query('relationship') relationship?: Relationships,
+        @Query() steamid: SteamDTO,
     ): Promise<Responses.FriendsResponse> {
-        return await this.steamService.GetFriendList(
-            steamid.toString(),
-            relationship,
-            wihtNames,
-        );
+        return await this.steamService.GetFriendList(steamid);
     }
 
     @ApiTags('User')
@@ -97,16 +89,8 @@ export class SteamController {
         description: 'Success',
         type: AchievementResponse,
     })
-    async GetPlayerAchievements(
-        @Query('steamid') steamid: SteamIdDto,
-        @Query('appid') appid: string,
-        @Query('language') language?: string,
-    ) {
-        return await this.steamService.GetPlayerAchievements(
-            steamid.toString(),
-            appid,
-            language,
-        );
+    async GetPlayerAchievements(@Query() steam: SteamDTO) {
+        return await this.steamService.GetPlayerAchievements(steam);
     }
 
     @ApiTags('User')
@@ -119,8 +103,7 @@ export class SteamController {
         description: 'Success',
         type: GamesResponse,
     })
-    @UsePipes(new ValidationPipe({ transform: true }))
-    async GetOwnedGames(@Query() steamid: SteamIdDto) {
+    async GetOwnedGames(@Query() steamid: SteamDTO) {
         console.log(steamid);
         return await this.steamService.GetOwnedGames(steamid.steamid);
     }

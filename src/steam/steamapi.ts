@@ -7,6 +7,7 @@ import {
     Relationships,
     SteamQuery,
 } from './enums';
+import { SteamDTO } from './dto/steam';
 export class SteamAPI {
     private SteamHost: string = 'https://api.steampowered.com/';
     Format: string = 'json';
@@ -43,6 +44,7 @@ export class SteamAPI {
             }
             console.error('Unexpected error:', error.response.data);
             console.error('URL:', url);
+            return error.response.data;
         }
     }
 
@@ -57,17 +59,15 @@ export class SteamAPI {
     }
 
     public async GetFriendList(
-        steamid: string,
-        relationship: Relationships = Relationships['friend'],
-        withNames: boolean,
+        steamid: SteamDTO,
     ): Promise<Responses.FriendsResponse> {
         const list = await this.doRequest<Responses.FriendsResponse>(
             SteamEndPoints['user'],
             SteamEndPoints['user']['friends'],
             Versions[1],
-            { steamid, relationship },
+            steamid,
         );
-        if (withNames === true) {
+        if (steamid.withNames === true) {
             const friends = list['friendslist']['friends'];
             for (const friend of friends) {
                 await this.GetProfileInfo(friend.steamid).then((profile) => {
@@ -91,15 +91,13 @@ export class SteamAPI {
     }
 
     public async GetPlayerAchievements(
-        steamid: string,
-        appid: string,
-        l?: string,
+        steam: SteamDTO,
     ): Promise<Responses.AchievementResponse> {
         return await this.doRequest<Responses.AchievementResponse>(
             SteamEndPoints['stats'],
             SteamEndPoints['stats']['achievements'],
             Versions[1],
-            { steamid, appid, l },
+            steam,
         );
     }
 
