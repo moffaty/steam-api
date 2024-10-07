@@ -4,15 +4,18 @@ import {
     HttpStatus,
     ParseIntPipe,
     Query,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import { SteamService } from './steam.service';
 import { Relationships } from './enums';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { FriendsList } from './dto/friendlist';
-import { Responses } from './responses';
-import { ProfileResponse } from './dto/profile';
-import { AchievementResponse } from './dto/achievements';
+import { FriendsList } from './dto/responses/friendlist';
+import { Responses } from './interfaces';
+import { ProfileResponse } from './dto/responses/profile';
+import { AchievementResponse } from './dto/responses/achievements';
 import { SteamIdDto } from './dto/steamid';
+import { GamesResponse } from './dto/responses/games';
 @Controller('steam')
 export class SteamController {
     constructor(readonly steamService: SteamService) {}
@@ -74,7 +77,21 @@ export class SteamController {
         );
     }
 
+    @ApiTags('User')
     @Get('achievements')
+    @ApiQuery({
+        name: 'steamid',
+        required: true,
+    })
+    @ApiQuery({
+        name: 'appid',
+        description: 'Application ID',
+    })
+    @ApiQuery({
+        name: 'language',
+        required: false,
+        description: 'Language of achievements',
+    })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Success',
@@ -90,5 +107,21 @@ export class SteamController {
             appid,
             language,
         );
+    }
+
+    @ApiTags('User')
+    @Get('games')
+    @ApiQuery({
+        name: 'steamid',
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Success',
+        type: GamesResponse,
+    })
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async GetOwnedGames(@Query() steamid: SteamIdDto) {
+        console.log(steamid);
+        return await this.steamService.GetOwnedGames(steamid.steamid);
     }
 }

@@ -13,7 +13,13 @@ async function bootstrap() {
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+        new ValidationPipe({
+            transform: true, // Чтобы преобразовывать входящие данные в тип DTO
+            whitelist: true, // Удалять свойства, которые не указаны в классе
+            forbidNonWhitelisted: true, // Возвращать ошибку, если в запросе есть неразрешенные свойства
+        }),
+    );
     await app.listen(3000);
 }
 bootstrap();

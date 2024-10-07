@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Relationships } from '../enums'; // Предположим, что Relationships находится в отдельном файле
+import { Relationships } from '../../enums'; // Предположим, что Relationships находится в отдельном файле
 
 export class Friend {
     @ApiProperty({

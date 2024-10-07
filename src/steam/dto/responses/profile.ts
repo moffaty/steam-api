@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SteamIdDto } from './steamid';
+import { SteamIdDto } from '../steamid';
 export class Player {
     @ApiProperty({ description: 'Steam identificator', type: SteamIdDto })
     steamid: SteamIdDto;
