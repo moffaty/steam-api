@@ -11,7 +11,8 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FriendsList } from './dto/friendlist';
 import { Responses } from './responses';
 import { ProfileResponse } from './dto/profile';
-
+import { AchievementResponse } from './dto/achievements';
+import { SteamIdDto } from './dto/steamid';
 @Controller('steam')
 export class SteamController {
     constructor(readonly steamService: SteamService) {}
@@ -22,6 +23,7 @@ export class SteamController {
         name: 'steamids',
         required: true,
         description: 'Steam identificator',
+        type: SteamIdDto,
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -30,9 +32,9 @@ export class SteamController {
     })
     @Get('profile')
     async getProfile(
-        @Query('steamids', new ParseIntPipe()) steamIds: string,
+        @Query('steamids', new ParseIntPipe()) steamIds: SteamIdDto,
     ): Promise<Responses.ProfileResponse> {
-        return await this.steamService.GetProfileInfo(steamIds);
+        return await this.steamService.GetProfileInfo(steamIds.toString());
     }
 
     @ApiTags('User')
@@ -41,6 +43,7 @@ export class SteamController {
         name: 'steamid',
         required: true,
         description: 'Steam identificator',
+        type: SteamIdDto,
     })
     @ApiQuery({
         name: 'withNames',
@@ -60,14 +63,32 @@ export class SteamController {
     })
     @Get('friends')
     async getFriends(
-        @Query('steamid') steamid: string,
+        @Query('steamid') steamid: SteamIdDto,
         @Query('withNames') wihtNames: boolean,
         @Query('relationship') relationship?: Relationships,
     ): Promise<Responses.FriendsResponse> {
         return await this.steamService.GetFriendList(
-            steamid,
+            steamid.toString(),
             relationship,
             wihtNames,
+        );
+    }
+
+    @Get('achievements')
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Success',
+        type: AchievementResponse,
+    })
+    async GetPlayerAchievements(
+        @Query('steamid') steamid: SteamIdDto,
+        @Query('appid') appid: string,
+        @Query('language') language?: string,
+    ) {
+        return await this.steamService.GetPlayerAchievements(
+            steamid.toString(),
+            appid,
+            language,
         );
     }
 }

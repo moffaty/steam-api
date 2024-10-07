@@ -71,6 +71,8 @@ export namespace Responses {
         apiname: string;
         achieved: string;
         unlocktime: number;
+        name?: string;
+        description?: string;
     }
 
     export interface UserStatsResponse {

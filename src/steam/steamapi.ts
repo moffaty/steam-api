@@ -7,7 +7,7 @@ import {
     Relationships,
     SteamQuery,
 } from './enums';
-
+import { SteamIdDto } from './dto/steamid';
 export class SteamAPI {
     private SteamHost: string = 'https://api.steampowered.com/';
     Format: string = 'json';
