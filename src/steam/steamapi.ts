@@ -42,7 +42,8 @@ export class SteamAPI {
             } else {
                 console.error('Unexpected error:', error);
             }
-            throw error;
+            console.error('Unexpected error:', error.response.data);
+            console.error('URL:', url);
         }
     }
 
@@ -67,7 +68,7 @@ export class SteamAPI {
             Versions[1],
             { steamid, relationship },
         );
-        if (withNames) {
+        if (withNames === true) {
             const friends = list['friendslist']['friends'];
             for (const friend of friends) {
                 await this.GetProfileInfo(friend.steamid).then((profile) => {
